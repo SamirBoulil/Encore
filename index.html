@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" data-framework="typescript">
+	<head>
+		<meta charset="utf-8">
+		<title>React • TodoMVC</title>
+		<link rel="stylesheet" href="node_modules/todomvc-common/base.css">
+		<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
+    <style>
+    .toggle-all-completed {
+      position: absolute;
+      top: -55px;
+      left: -12px;
+      width: 60px;
+      height: 34px;
+      text-align: center;
+      border: none; /* Mobile Safari */
+    }
+    .in-progress {
+      background-color: aliceblue;
+    }
+    .todo-list li .toggle {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .todo-list li label {
+      display: inline-block !important;
+      vertical-align: middle;
+      margin-left: 0;
+    }
+    .todo-list li .try:checked:after {
+      content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="#71ead3" stroke="#71ead3" stroke-width="3"/></svg>');
+    }
+    </style>
+	</head>
+	<body>
+		<section class="todoapp"></section>
+		<footer class="info">
+			<p>Double-click to edit a todo</p>
+			<p>Created by <a href="http://github.com/remojansen/">Remo H. Jansen</a></p>
+			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+		</footer>
+		<script type="text/javascript" src="node_modules/todomvc-common/base.js"></script>
+		<script type="text/javascript" src="node_modules/react/dist/react-with-addons.js"></script>
+		<script type="text/javascript" src="node_modules/classnames/index.js"></script>
+		<script type="text/javascript" src="node_modules/director/build/director.js"></script>
+
+		<script type="text/javascript" src="js/bundle.js"></script>
+	</body>
+</html>
