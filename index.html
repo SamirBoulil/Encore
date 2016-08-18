@@ -31,6 +31,42 @@
     .todo-list li .try:checked:after {
       content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="#71ead3" stroke="#71ead3" stroke-width="3"/></svg>');
     }
+    .todo-list li .action {
+      display: none;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 40px;
+      height: 40px;
+      margin: auto 0;
+      font-size: 30px;
+      margin-bottom: 11px;
+      transition: color 0.2s ease-out;
+      cursor: pointer;
+    }
+    .todo-list li:hover .action {
+      display: block;
+    }
+    .todo-list li .action-destroy {
+      right: 10px;
+      color: #cc9a9a;
+    }
+    .todo-list li .action-destroy:hover {
+      color: #af5b5e;
+    }
+    .todo-list li .action-destroy:after {
+      content: '✗';
+    }
+    .todo-list li .action-start {
+      right: 45px;
+      color: #9ab9cc;
+    }
+    .todo-list li .action-start:hover {
+      color: #9ebeda;
+    }
+    .todo-list li .action-start:after {
+      content: '❍';
+    }
     </style>
 	</head>
 	<body>
