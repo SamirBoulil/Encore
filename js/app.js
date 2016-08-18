@@ -124,7 +124,7 @@ var TodoApp = (function (_super) {
         if (todos.length) {
             main = (React.createElement("section", {className: "main"}, React.createElement("input", {className: "toggle-all", type: "checkbox", onChange: function (e) { return _this.toggleAllCompleted(e); }, checked: activeTodoCount === 0}), React.createElement("ul", {className: "todo-list"}, todoItems)));
         }
-        return (React.createElement("div", null, React.createElement("header", {className: "header"}, React.createElement("h1", null, "todos"), React.createElement("input", {ref: "newField", className: "new-todo", placeholder: "What needs to be done?", onKeyDown: function (e) { return _this.handleNewTodoKeyDown(e); }, autoFocus: true})), main, footer));
+        return (React.createElement("div", null, React.createElement("header", {className: "header"}, React.createElement("h1", null, "encore"), React.createElement("input", {ref: "newField", className: "new-todo", placeholder: "What needs to be done?", onKeyDown: function (e) { return _this.handleNewTodoKeyDown(e); }, autoFocus: true})), main, footer));
     };
     return TodoApp;
 }(React.Component));

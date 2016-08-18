@@ -188,7 +188,7 @@ class TodoApp extends React.Component<IAppProps, IAppState> {
     return (
       <div>
         <header className="header">
-          <h1>todos</h1>
+          <h1>encore</h1>
           <input
             ref="newField"
             className="new-todo"
