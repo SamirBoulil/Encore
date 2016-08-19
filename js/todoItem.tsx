@@ -81,12 +81,14 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
     var i = 0;
     for (i = 0; i < this.props.todo.retries; i++) {
       retries.push(
-          <input
-            className="toggle try"
-            type="checkbox"
-            checked={this.props.todo.completed}
+          <span className={(this.props.todo.completed) ? "indicator indicator-completed" : "indicator"}
           />
       );
+    }
+
+    var inProgressButton = null;
+    if (!this.props.todo.completed) {
+      inProgressButton = <button className="action action-start" onClick={this.props.onToggleInProgress} />;
     }
 
     return (
@@ -96,7 +98,7 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
       })}>
         <div className={this.props.inProgress ? "view in-progress" : "view"}>
           <input
-            className="toggle toggle-command"
+            className="indicator toggle"
             type="checkbox"
             checked={this.props.todo.completed}
             onChange={this.props.onToggleCompleted}
@@ -105,7 +107,7 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
           <label onDoubleClick={ e => this.handleEdit() }>
             {this.props.todo.title}
           </label>
-          <button className="action action-start" onClick={this.props.onToggleInProgress} />
+          {inProgressButton}
           <button className="action action-destroy" onClick={this.props.onDestroy} />
         </div>
         <input

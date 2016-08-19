@@ -80,7 +80,7 @@ class TodoModel implements ITodoModel {
   public toggleInProgress(todoToToggleInProgress : ITodo) {
     var that = this;
     this.todos = this.todos.map<ITodo>((todo : ITodo) => {
-      if (todo === todoToToggleInProgress) {
+      if (todo === todoToToggleInProgress && !todo.completed) {
         var newInProgressDate = !that.isInProgress(todo) ? new Date() : null;
         return Utils.extend({}, todo, {inProgressDate: newInProgressDate});
       } else {

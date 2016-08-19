@@ -47,7 +47,7 @@ var TodoModel = (function () {
     TodoModel.prototype.toggleInProgress = function (todoToToggleInProgress) {
         var that = this;
         this.todos = this.todos.map(function (todo) {
-            if (todo === todoToToggleInProgress) {
+            if (todo === todoToToggleInProgress && !todo.completed) {
                 var newInProgressDate = !that.isInProgress(todo) ? new Date() : null;
                 return utils_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
             }

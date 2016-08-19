@@ -55,12 +55,16 @@ var TodoItem = (function (_super) {
         var retries = [];
         var i = 0;
         for (i = 0; i < this.props.todo.retries; i++) {
-            retries.push(React.createElement("input", {className: "toggle try", type: "checkbox", checked: this.props.todo.completed}));
+            retries.push(React.createElement("span", {className: (this.props.todo.completed) ? "indicator indicator-completed" : "indicator"}));
+        }
+        var inProgressButton = null;
+        if (!this.props.todo.completed) {
+            inProgressButton = React.createElement("button", {className: "action action-start", onClick: this.props.onToggleInProgress});
         }
         return (React.createElement("li", {className: classNames({
             completed: this.props.todo.completed,
             editing: this.props.editing
-        })}, React.createElement("div", {className: this.props.inProgress ? "view in-progress" : "view"}, React.createElement("input", {className: "toggle toggle-command", type: "checkbox", checked: this.props.todo.completed, onChange: this.props.onToggleCompleted}), retries, React.createElement("label", {onDoubleClick: function (e) { return _this.handleEdit(); }}, this.props.todo.title), React.createElement("button", {className: "action action-start", onClick: this.props.onToggleInProgress}), React.createElement("button", {className: "action action-destroy", onClick: this.props.onDestroy})), React.createElement("input", {ref: "editField", className: "edit", value: this.state.editText, onBlur: function (e) { return _this.handleSubmit(e); }, onChange: function (e) { return _this.handleChange(e); }, onKeyDown: function (e) { return _this.handleKeyDown(e); }})));
+        })}, React.createElement("div", {className: this.props.inProgress ? "view in-progress" : "view"}, React.createElement("input", {className: "indicator toggle", type: "checkbox", checked: this.props.todo.completed, onChange: this.props.onToggleCompleted}), retries, React.createElement("label", {onDoubleClick: function (e) { return _this.handleEdit(); }}, this.props.todo.title), inProgressButton, React.createElement("button", {className: "action action-destroy", onClick: this.props.onDestroy})), React.createElement("input", {ref: "editField", className: "edit", value: this.state.editText, onBlur: function (e) { return _this.handleSubmit(e); }, onChange: function (e) { return _this.handleChange(e); }, onKeyDown: function (e) { return _this.handleKeyDown(e); }})));
     };
     return TodoItem;
 }(React.Component));
