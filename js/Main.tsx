@@ -1,6 +1,11 @@
-import * as React from 'react';
-import * as ReactRouter from 'react-router';
-import * as firebase from 'firebase';
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
+
+import * as React from "react";
+import * as ReactRouter from "react-router";
+import * as firebase from "firebase";
 
 var Router = ReactRouter.Router;
 var Link = ReactRouter.Link;
@@ -25,10 +30,10 @@ class Main extends React.Component<{}, {}> {
 
       if (firebaseUser) {
         console.log("Logged IN", firebaseUser);
-        this.props.history.pushState('/');
+        this.props.history.pushState("/");
 
       } else {
-        console.log('Not logged in');
+        console.log("Not logged in");
       }
     });
   }

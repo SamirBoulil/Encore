@@ -5,7 +5,7 @@
 
 import { ALL_TODOS, ACTIVE_TODOS, IN_PROGRESS_TODOS, COMPLETED_TODOS } from "../config/constants";
 import * as React from "react";
-import { Utils } from "../utils/utils";
+import { Utils } from "../utils/utils-firebase";
 
 class TodoFooter extends React.Component<ITodoFooterProps, {}> {
 

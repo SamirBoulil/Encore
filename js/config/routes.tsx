@@ -1,3 +1,8 @@
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
+
 import * as React from 'react';
 import * as ReactRouter from 'react-router';
 import {Main} from '../Main';

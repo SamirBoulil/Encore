@@ -1,3 +1,7 @@
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
 
 const ALL_TODOS = 'all';
 const ACTIVE_TODOS = 'active';

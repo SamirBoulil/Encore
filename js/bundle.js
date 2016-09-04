@@ -5,9 +5,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var React = require('react');
-var ReactRouter = require('react-router');
-var firebase = require('firebase');
+var React = require("react");
+var ReactRouter = require("react-router");
+var firebase = require("firebase");
 var Router = ReactRouter.Router;
 var Link = ReactRouter.Link;
 var Main = (function (_super) {
@@ -26,10 +26,10 @@ var Main = (function (_super) {
             });
             if (firebaseUser) {
                 console.log("Logged IN", firebaseUser);
-                _this.props.history.pushState('/');
+                _this.props.history.pushState("/");
             }
             else {
-                console.log('Not logged in');
+                console.log("Not logged in");
             }
         });
     };
@@ -42,23 +42,23 @@ exports.Main = Main;
 
 },{"firebase":41,"react":245,"react-router":94}],2:[function(require,module,exports){
 "use strict";
-var React = require('react');
-var ReactRouter = require('react-router');
-var ReactDOM = require('react-dom');
-var Main_1 = require('./Main');
-var Login_1 = require('./containers/Login');
-var Logout_1 = require('./containers/Logout');
-var TodoList_1 = require('./components/TodoList');
-var TodoModel_1 = require('./models/TodoModel');
-var authenticated_1 = require('./utils/authenticated');
+var React = require("react");
+var ReactRouter = require("react-router");
+var ReactDOM = require("react-dom");
+var Main_1 = require("./Main");
+var Login_1 = require("./containers/Login");
+var Logout_1 = require("./containers/Logout");
+var TodoList_1 = require("./components/TodoList");
+var TodoModel_1 = require("./models/TodoModel");
+var authenticated_1 = require("./utils/authenticated");
 var Router = ReactRouter.Router;
 var Route = ReactRouter.Route;
 var hashHistory = ReactRouter.hashHistory;
 var IndexRoute = ReactRouter.IndexRoute;
-var model = new TodoModel_1.TodoModel('react-todos');
+var model = new TodoModel_1.TodoModel("react-todos");
 function render() {
     var routes = (React.createElement(Router, {history: hashHistory}, React.createElement(Route, {path: "/", component: Main_1.Main}, React.createElement(IndexRoute, {component: TodoList_1.TodoList, model: model, onEnter: authenticated_1.requireAuth}), React.createElement(Route, {path: "login", component: Login_1.Login}), React.createElement(Route, {path: "logout", component: Logout_1.Logout}))));
-    ReactDOM.render(routes, document.getElementsByClassName('todoapp')[0]);
+    ReactDOM.render(routes, document.getElementsByClassName("todoapp")[0]);
 }
 model.subscribe(render);
 render();
@@ -72,14 +72,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var constants_1 = require("../config/constants");
 var React = require("react");
-var utils_1 = require("../utils/utils");
+var utils_firebase_1 = require("../utils/utils-firebase");
 var TodoFooter = (function (_super) {
     __extends(TodoFooter, _super);
     function TodoFooter() {
         _super.apply(this, arguments);
     }
     TodoFooter.prototype.render = function () {
-        var activeTodoWord = utils_1.Utils.pluralize(this.props.count, 'item');
+        var activeTodoWord = utils_firebase_1.Utils.pluralize(this.props.count, 'item');
         var clearButton = null;
         if (this.props.completedCount > 0) {
             clearButton = (React.createElement("button", {className: "clear-completed", onClick: this.props.onClearCompleted}, "Clear completed"));
@@ -91,7 +91,7 @@ var TodoFooter = (function (_super) {
 }(React.Component));
 exports.TodoFooter = TodoFooter;
 
-},{"../config/constants":6,"../utils/utils":12,"react":245}],4:[function(require,module,exports){
+},{"../config/constants":6,"../utils/utils-firebase":12,"react":245}],4:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -387,11 +387,11 @@ exports.Logout = Logout;
 
 },{"firebase":41,"react":245}],10:[function(require,module,exports){
 "use strict";
-var utils_1 = require("../utils//utils");
+var utils_firebase_1 = require("../utils/utils-firebase");
 var TodoModel = (function () {
     function TodoModel(key) {
         this.key = key;
-        this.todos = utils_1.Utils.store(key);
+        this.todos = utils_firebase_1.Utils.store(key);
         this.onChanges = [];
         this.refreshTodos();
     }
@@ -399,12 +399,12 @@ var TodoModel = (function () {
         this.onChanges.push(onChange);
     };
     TodoModel.prototype.inform = function () {
-        utils_1.Utils.store(this.key, this.todos);
+        utils_firebase_1.Utils.store(this.key, this.todos);
         this.onChanges.forEach(function (cb) { cb(); });
     };
     TodoModel.prototype.addTodo = function (title) {
         this.todos = this.todos.concat({
-            id: utils_1.Utils.uuid(),
+            id: utils_firebase_1.Utils.uuid(),
             title: title,
             completed: false,
             inProgressDate: null,
@@ -414,7 +414,7 @@ var TodoModel = (function () {
     };
     TodoModel.prototype.toggleAllCompleted = function (checked) {
         this.todos = this.todos.map(function (todo) {
-            return utils_1.Utils.extend({}, todo, { completed: checked });
+            return utils_firebase_1.Utils.extend({}, todo, { completed: checked });
         });
         this.inform();
     };
@@ -422,7 +422,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             return todo !== todoToToggleCompleted ?
                 todo :
-                utils_1.Utils.extend({}, todo, { completed: !todo.completed });
+                utils_firebase_1.Utils.extend({}, todo, { completed: !todo.completed });
         });
         this.inform();
     };
@@ -437,7 +437,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             if (todo === todoToToggleInProgress && !todo.completed) {
                 var newInProgressDate = !that.isInProgress(todo) ? new Date() : null;
-                return utils_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
+                return utils_firebase_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
             }
             else {
                 return todo;
@@ -447,7 +447,7 @@ var TodoModel = (function () {
     };
     TodoModel.prototype.save = function (todoToSave, text) {
         this.todos = this.todos.map(function (todo) {
-            return todo !== todoToSave ? todo : utils_1.Utils.extend({}, todo, { title: text });
+            return todo !== todoToSave ? todo : utils_firebase_1.Utils.extend({}, todo, { title: text });
         });
         this.inform();
     };
@@ -472,7 +472,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             if (!_this.isInProgress(todo) && todo.inProgressDate !== null) {
                 var newRetry = todo.retries + 1;
-                return utils_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
+                return utils_firebase_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
             }
             return todo;
         });
@@ -482,10 +482,10 @@ var TodoModel = (function () {
 }());
 exports.TodoModel = TodoModel;
 
-},{"../utils//utils":12}],11:[function(require,module,exports){
+},{"../utils/utils-firebase":12}],11:[function(require,module,exports){
 "use strict";
-var firebase = require('firebase');
 var firebase_config_1 = require('../config/firebase.config');
+var firebase = require('firebase');
 firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
 function requireAuth(nextState, replace) {
     if (null === firebase.auth().currentUser) {
@@ -499,9 +499,13 @@ exports.requireAuth = requireAuth;
 
 },{"../config/firebase.config":7,"firebase":41}],12:[function(require,module,exports){
 "use strict";
+var firebase = require('firebase');
 var Utils = (function () {
     function Utils() {
     }
+    Utils.pluralize = function (count, word) {
+        return count === 1 ? word : word + 's';
+    };
     Utils.uuid = function () {
         var i, random;
         var uuid = '';
@@ -515,15 +519,22 @@ var Utils = (function () {
         }
         return uuid;
     };
-    Utils.pluralize = function (count, word) {
-        return count === 1 ? word : word + 's';
-    };
     Utils.store = function (namespace, data) {
-        if (data) {
-            return localStorage.setItem(namespace, JSON.stringify(data));
+        console.debug();
+        console.log("store");
+        if (null !== firebase.auth().currentUser) {
+            var userId = firebase.auth().currentUser.uid;
+            if (data) {
+                firebase.database().ref('users/' + userId).set(JSON.stringify(data));
+            }
+            return firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
+                console.debug();
+                return (JSON.parse(snapshot.val())) || [];
+            });
         }
-        var store = localStorage.getItem(namespace);
-        return (store && JSON.parse(store)) || [];
+        else {
+            return [];
+        }
     };
     Utils.extend = function () {
         var objs = [];
@@ -545,7 +556,7 @@ var Utils = (function () {
 }());
 exports.Utils = Utils;
 
-},{}],13:[function(require,module,exports){
+},{"firebase":41}],13:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');

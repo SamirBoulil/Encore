@@ -3,24 +3,23 @@
 /*jshint trailing:false */
 /*jshint newcap:false */
 
-/// <reference path='../typings/index.d.ts' />
+/// <reference path="../typings/index.d.ts" />
 
-// import {routes} from './config/routes';
-import * as React from 'react';
-import * as ReactRouter from 'react-router';
-import * as ReactDOM from 'react-dom';
-import {Main} from './Main';
-import {Login} from './containers/Login';
-import {Logout} from './containers/Logout';
-import {TodoList} from './components/TodoList';
-import {TodoModel} from './models/TodoModel';
-import {requireAuth} from './utils/authenticated';
+import * as React from "react";
+import * as ReactRouter from "react-router";
+import * as ReactDOM from "react-dom";
+import {Main} from "./Main";
+import {Login} from "./containers/Login";
+import {Logout} from "./containers/Logout";
+import {TodoList} from "./components/TodoList";
+import {TodoModel} from "./models/TodoModel";
+import {requireAuth} from "./utils/authenticated";
 
 let Router = ReactRouter.Router;
 let Route = ReactRouter.Route;
 let hashHistory = ReactRouter.hashHistory;
 let IndexRoute = ReactRouter.IndexRoute;
-let model = new TodoModel('react-todos');
+let model = new TodoModel("react-todos");
 
 function render() {
   var routes = (
@@ -32,7 +31,7 @@ function render() {
       </Route>
     </Router>
   );
-  ReactDOM.render(routes, document.getElementsByClassName('todoapp')[0]);
+  ReactDOM.render(routes, document.getElementsByClassName("todoapp")[0]);
 }
 model.subscribe(render);
 render();

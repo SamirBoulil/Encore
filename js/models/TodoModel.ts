@@ -3,7 +3,7 @@
 /*jshint trailing:false */
 /*jshint newcap:false */
 
-import { Utils } from "../utils//utils";
+import { Utils } from "../utils/utils-firebase";
 
 // Generic "model" object. You can use whatever
 // framework you want. For this application it
@@ -18,9 +18,13 @@ class TodoModel implements ITodoModel {
 
   constructor(key) {
     this.key = key;
-    this.todos = Utils.store(key);
+    this.todos = [];
     this.onChanges = [];
     this.refreshTodos();
+  }
+
+  public getValues(todo: any) {
+    this.todos = todo;
   }
 
   public subscribe(onChange) {

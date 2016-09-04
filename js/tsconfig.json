@@ -31,8 +31,8 @@
         "config/routes.tsx",
         "models/interfaces.d.ts",
         "models/TodoModel.ts",
-        "utils/utils.ts",
         "utils/authenticated.ts",
+        "utils/utils-firebase",
         "app.tsx",
         "Main.tsx"
     ],

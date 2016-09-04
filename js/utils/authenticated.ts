@@ -1,7 +1,12 @@
-import * as React from 'react';
-import * as firebase from 'firebase';
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
 
 import {FIREBASE_CONFIG} from '../config/firebase.config';
+
+import * as React from 'react';
+import * as firebase from 'firebase';
 
 firebase.initializeApp(FIREBASE_CONFIG);
 

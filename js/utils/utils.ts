@@ -1,5 +1,9 @@
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
 
-class Utils {
+class UtilsLocalstorage {
 
   public static uuid() : string {
     /*jshint bitwise:false */
@@ -45,4 +49,4 @@ class Utils {
   }
 }
 
-export { Utils };
+export { UtilsLocalstorage };

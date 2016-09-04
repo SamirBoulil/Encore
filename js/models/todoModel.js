@@ -1,22 +1,25 @@
 "use strict";
-var utils_1 = require("../utils//utils");
+var utils_firebase_1 = require("../utils/utils-firebase");
 var TodoModel = (function () {
     function TodoModel(key) {
         this.key = key;
-        this.todos = utils_1.Utils.store(key);
+        this.todos = [];
         this.onChanges = [];
         this.refreshTodos();
     }
+    TodoModel.prototype.getValues = function (todo) {
+        this.todos = todo;
+    };
     TodoModel.prototype.subscribe = function (onChange) {
         this.onChanges.push(onChange);
     };
     TodoModel.prototype.inform = function () {
-        utils_1.Utils.store(this.key, this.todos);
+        utils_firebase_1.Utils.store(this.key, this.todos);
         this.onChanges.forEach(function (cb) { cb(); });
     };
     TodoModel.prototype.addTodo = function (title) {
         this.todos = this.todos.concat({
-            id: utils_1.Utils.uuid(),
+            id: utils_firebase_1.Utils.uuid(),
             title: title,
             completed: false,
             inProgressDate: null,
@@ -26,7 +29,7 @@ var TodoModel = (function () {
     };
     TodoModel.prototype.toggleAllCompleted = function (checked) {
         this.todos = this.todos.map(function (todo) {
-            return utils_1.Utils.extend({}, todo, { completed: checked });
+            return utils_firebase_1.Utils.extend({}, todo, { completed: checked });
         });
         this.inform();
     };
@@ -34,7 +37,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             return todo !== todoToToggleCompleted ?
                 todo :
-                utils_1.Utils.extend({}, todo, { completed: !todo.completed });
+                utils_firebase_1.Utils.extend({}, todo, { completed: !todo.completed });
         });
         this.inform();
     };
@@ -49,7 +52,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             if (todo === todoToToggleInProgress && !todo.completed) {
                 var newInProgressDate = !that.isInProgress(todo) ? new Date() : null;
-                return utils_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
+                return utils_firebase_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
             }
             else {
                 return todo;
@@ -59,7 +62,7 @@ var TodoModel = (function () {
     };
     TodoModel.prototype.save = function (todoToSave, text) {
         this.todos = this.todos.map(function (todo) {
-            return todo !== todoToSave ? todo : utils_1.Utils.extend({}, todo, { title: text });
+            return todo !== todoToSave ? todo : utils_firebase_1.Utils.extend({}, todo, { title: text });
         });
         this.inform();
     };
@@ -84,7 +87,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             if (!_this.isInProgress(todo) && todo.inProgressDate !== null) {
                 var newRetry = todo.retries + 1;
-                return utils_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
+                return utils_firebase_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
             }
             return todo;
         });

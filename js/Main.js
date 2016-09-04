@@ -4,9 +4,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var React = require('react');
-var ReactRouter = require('react-router');
-var firebase = require('firebase');
+var React = require("react");
+var ReactRouter = require("react-router");
+var firebase = require("firebase");
 var Router = ReactRouter.Router;
 var Link = ReactRouter.Link;
 var Main = (function (_super) {
@@ -25,10 +25,10 @@ var Main = (function (_super) {
             });
             if (firebaseUser) {
                 console.log("Logged IN", firebaseUser);
-                _this.props.history.pushState('/');
+                _this.props.history.pushState("/");
             }
             else {
-                console.log('Not logged in');
+                console.log("Not logged in");
             }
         });
     };

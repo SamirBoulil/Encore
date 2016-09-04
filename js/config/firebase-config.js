@@ -1,3 +1,0 @@
-"use strict";
-var FIREBASE_CONFIG = {};
-exports.FIREBASE_CONFIG = FIREBASE_CONFIG;

@@ -1,3 +1,8 @@
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
+
 import * as React from 'react';
 import * as firebase from 'firebase';
 
@@ -23,6 +28,7 @@ class Login extends React.Component<{}, {}> {
     var provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithRedirect(provider).then(function(result:any) {
 
+      // Lol
       self.context.router.replace('/');
 
       // User signed in!

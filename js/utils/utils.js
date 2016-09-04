@@ -1,8 +1,8 @@
 "use strict";
-var Utils = (function () {
-    function Utils() {
+var UtilsLocalstorage = (function () {
+    function UtilsLocalstorage() {
     }
-    Utils.uuid = function () {
+    UtilsLocalstorage.uuid = function () {
         var i, random;
         var uuid = '';
         for (i = 0; i < 32; i++) {
@@ -15,17 +15,17 @@ var Utils = (function () {
         }
         return uuid;
     };
-    Utils.pluralize = function (count, word) {
+    UtilsLocalstorage.pluralize = function (count, word) {
         return count === 1 ? word : word + 's';
     };
-    Utils.store = function (namespace, data) {
+    UtilsLocalstorage.store = function (namespace, data) {
         if (data) {
             return localStorage.setItem(namespace, JSON.stringify(data));
         }
         var store = localStorage.getItem(namespace);
         return (store && JSON.parse(store)) || [];
     };
-    Utils.extend = function () {
+    UtilsLocalstorage.extend = function () {
         var objs = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             objs[_i - 0] = arguments[_i];
@@ -41,6 +41,6 @@ var Utils = (function () {
         }
         return newObj;
     };
-    return Utils;
+    return UtilsLocalstorage;
 }());
-exports.Utils = Utils;
+exports.UtilsLocalstorage = UtilsLocalstorage;

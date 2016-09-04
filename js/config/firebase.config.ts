@@ -1,3 +1,7 @@
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDIerHcoq8ZDwZTwp6fyEdNd6YWcO9g4ws",

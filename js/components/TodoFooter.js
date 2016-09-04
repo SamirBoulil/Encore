@@ -6,14 +6,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var constants_1 = require("../config/constants");
 var React = require("react");
-var utils_1 = require("../utils/utils");
+var utils_firebase_1 = require("../utils/utils-firebase");
 var TodoFooter = (function (_super) {
     __extends(TodoFooter, _super);
     function TodoFooter() {
         _super.apply(this, arguments);
     }
     TodoFooter.prototype.render = function () {
-        var activeTodoWord = utils_1.Utils.pluralize(this.props.count, 'item');
+        var activeTodoWord = utils_firebase_1.Utils.pluralize(this.props.count, 'item');
         var clearButton = null;
         if (this.props.completedCount > 0) {
             clearButton = (React.createElement("button", {className: "clear-completed", onClick: this.props.onClearCompleted}, "Clear completed"));
