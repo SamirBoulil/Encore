@@ -20,13 +20,21 @@
         "!node_modules/**"
     ],
     "files": [
-        "constants.ts",
-        "interfaces.d.ts",
-        "todoModel.ts",
-        "utils.ts",
+        "components/interfaces.d.ts",
+        "components/TodoFooter.tsx",
+        "components/TodoItem.tsx",
+        "components/TodoList.tsx",
+        "containers/Login",
+        "containers/Logout",
+        "config/constants.ts",
+        "config/firebase.config.ts",
+        "config/routes.tsx",
+        "models/interfaces.d.ts",
+        "models/TodoModel.ts",
+        "utils/utils.ts",
+        "utils/authenticated.ts",
         "app.tsx",
-        "footer.tsx",
-        "todoItem.tsx"
+        "Main.tsx"
     ],
     "exclude": []
 }

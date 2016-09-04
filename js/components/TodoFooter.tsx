@@ -2,13 +2,10 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
-/*global React */
 
-/// <reference path="../typings/tsd.d.ts" />
-/// <reference path="./interfaces.d.ts"/>
-
-import { ALL_TODOS, ACTIVE_TODOS, IN_PROGRESS_TODOS, COMPLETED_TODOS } from "./constants";
-import { Utils } from "./utils";
+import { ALL_TODOS, ACTIVE_TODOS, IN_PROGRESS_TODOS, COMPLETED_TODOS } from "../config/constants";
+import * as React from "react";
+import { Utils } from "../utils/utils";
 
 class TodoFooter extends React.Component<ITodoFooterProps, {}> {
 

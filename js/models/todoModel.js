@@ -1,5 +1,5 @@
 "use strict";
-var utils_1 = require("./utils");
+var utils_1 = require("../utils//utils");
 var TodoModel = (function () {
     function TodoModel(key) {
         this.key = key;

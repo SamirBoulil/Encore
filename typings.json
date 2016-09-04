@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "debug": "registry:npm/debug#2.0.0+20160723033700",
+    "firebase": "registry:npm/firebase#3.0.5+20160723033700",
+    "react-dom": "registry:npm/react-dom#15.0.1+20160826174104",
+    "react-router": "registry:npm/react-router#2.4.0+20160811060709"
+  },
+  "globalDependencies": {
+    "classnames": "registry:dt/classnames#0.0.0+20160316155526"
+  }
+}

@@ -4,8 +4,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var constants_1 = require("./constants");
-var utils_1 = require("./utils");
+var constants_1 = require("../config/constants");
+var React = require("react");
+var utils_1 = require("../utils/utils");
 var TodoFooter = (function (_super) {
     __extends(TodoFooter, _super);
     function TodoFooter() {
