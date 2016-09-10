@@ -26,7 +26,7 @@ class Main extends React.Component<{}, {}> {
 
       this.setState({
         loggedIn: (null !== firebaseUser)
-      } )
+      });
 
       if (firebaseUser) {
         console.log("Logged IN", firebaseUser);

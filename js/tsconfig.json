@@ -32,7 +32,7 @@
         "models/interfaces.d.ts",
         "models/TodoModel.ts",
         "utils/authenticated.ts",
-        "utils/utils-firebase",
+        "utils/firebase-utils.ts",
         "app.tsx",
         "Main.tsx"
     ],

@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require('react');
-var firebase = require('firebase');
+var firebase_utils_1 = require('../utils/firebase-utils');
 var Login = (function (_super) {
     __extends(Login, _super);
     function Login(props) {
@@ -15,17 +15,15 @@ var Login = (function (_super) {
         };
     }
     Login.prototype.handleSubmit = function (e) {
+        var _this = this;
         e.preventDefault();
-        var self = this;
-        console.log("trying to log in");
-        var provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithRedirect(provider).then(function (result) {
-            self.context.router.replace('/');
+        firebase_utils_1.Utils.logIn().then(function (result) {
+            this.context.router.replace('/');
             console.log('User signed in!');
             var token = result.credential.accessToken;
             var user = result.user;
         }).catch(function (error) {
-            this.setState({ error: error });
+            _this.setState({ error: error });
         });
     };
     Login.prototype.render = function () {

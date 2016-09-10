@@ -72,14 +72,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var constants_1 = require("../config/constants");
 var React = require("react");
-var utils_firebase_1 = require("../utils/utils-firebase");
+var firebase_utils_1 = require("../utils/firebase-utils");
 var TodoFooter = (function (_super) {
     __extends(TodoFooter, _super);
     function TodoFooter() {
         _super.apply(this, arguments);
     }
     TodoFooter.prototype.render = function () {
-        var activeTodoWord = utils_firebase_1.Utils.pluralize(this.props.count, 'item');
+        var activeTodoWord = firebase_utils_1.Utils.pluralize(this.props.count, 'item');
         var clearButton = null;
         if (this.props.completedCount > 0) {
             clearButton = (React.createElement("button", {className: "clear-completed", onClick: this.props.onClearCompleted}, "Clear completed"));
@@ -91,7 +91,7 @@ var TodoFooter = (function (_super) {
 }(React.Component));
 exports.TodoFooter = TodoFooter;
 
-},{"../config/constants":6,"../utils/utils-firebase":12,"react":245}],4:[function(require,module,exports){
+},{"../config/constants":6,"../utils/firebase-utils":12,"react":245}],4:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -326,7 +326,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require('react');
-var firebase = require('firebase');
+var firebase_utils_1 = require('../utils/firebase-utils');
 var Login = (function (_super) {
     __extends(Login, _super);
     function Login(props) {
@@ -336,17 +336,15 @@ var Login = (function (_super) {
         };
     }
     Login.prototype.handleSubmit = function (e) {
+        var _this = this;
         e.preventDefault();
-        var self = this;
-        console.log("trying to log in");
-        var provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithRedirect(provider).then(function (result) {
-            self.context.router.replace('/');
+        firebase_utils_1.Utils.logIn().then(function (result) {
+            this.context.router.replace('/');
             console.log('User signed in!');
             var token = result.credential.accessToken;
             var user = result.user;
         }).catch(function (error) {
-            this.setState({ error: error });
+            _this.setState({ error: error });
         });
     };
     Login.prototype.render = function () {
@@ -357,7 +355,7 @@ var Login = (function (_super) {
 }(React.Component));
 exports.Login = Login;
 
-},{"firebase":41,"react":245}],9:[function(require,module,exports){
+},{"../utils/firebase-utils":12,"react":245}],9:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -387,24 +385,35 @@ exports.Logout = Logout;
 
 },{"firebase":41,"react":245}],10:[function(require,module,exports){
 "use strict";
-var utils_firebase_1 = require("../utils/utils-firebase");
+var firebase_utils_1 = require("../utils/firebase-utils");
 var TodoModel = (function () {
     function TodoModel(key) {
-        this.key = key;
-        this.todos = utils_firebase_1.Utils.store(key);
+        var _this = this;
         this.onChanges = [];
-        this.refreshTodos();
+        this.key = key;
+        firebase_utils_1.Utils.getValues('').then(function (values) {
+            console.log('Values retrieved from firebase');
+            console.log(values);
+            _this.todos = values;
+            _this.refreshTodos();
+        });
     }
+    TodoModel.prototype.getValues = function (todo) {
+        this.todos = todo;
+    };
     TodoModel.prototype.subscribe = function (onChange) {
         this.onChanges.push(onChange);
     };
     TodoModel.prototype.inform = function () {
-        utils_firebase_1.Utils.store(this.key, this.todos);
-        this.onChanges.forEach(function (cb) { cb(); });
+        console.log('informing every one model is updated');
+        var self = this;
+        firebase_utils_1.Utils.store('', this.todos).then(function (values) {
+            self.onChanges.forEach(function (cb) { cb(); });
+        });
     };
     TodoModel.prototype.addTodo = function (title) {
         this.todos = this.todos.concat({
-            id: utils_firebase_1.Utils.uuid(),
+            id: firebase_utils_1.Utils.uuid(),
             title: title,
             completed: false,
             inProgressDate: null,
@@ -414,7 +423,7 @@ var TodoModel = (function () {
     };
     TodoModel.prototype.toggleAllCompleted = function (checked) {
         this.todos = this.todos.map(function (todo) {
-            return utils_firebase_1.Utils.extend({}, todo, { completed: checked });
+            return firebase_utils_1.Utils.extend({}, todo, { completed: checked });
         });
         this.inform();
     };
@@ -422,7 +431,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             return todo !== todoToToggleCompleted ?
                 todo :
-                utils_firebase_1.Utils.extend({}, todo, { completed: !todo.completed });
+                firebase_utils_1.Utils.extend({}, todo, { completed: !todo.completed });
         });
         this.inform();
     };
@@ -437,7 +446,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             if (todo === todoToToggleInProgress && !todo.completed) {
                 var newInProgressDate = !that.isInProgress(todo) ? new Date() : null;
-                return utils_firebase_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
+                return firebase_utils_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
             }
             else {
                 return todo;
@@ -447,7 +456,7 @@ var TodoModel = (function () {
     };
     TodoModel.prototype.save = function (todoToSave, text) {
         this.todos = this.todos.map(function (todo) {
-            return todo !== todoToSave ? todo : utils_firebase_1.Utils.extend({}, todo, { title: text });
+            return todo !== todoToSave ? todo : firebase_utils_1.Utils.extend({}, todo, { title: text });
         });
         this.inform();
     };
@@ -472,7 +481,7 @@ var TodoModel = (function () {
         this.todos = this.todos.map(function (todo) {
             if (!_this.isInProgress(todo) && todo.inProgressDate !== null) {
                 var newRetry = todo.retries + 1;
-                return utils_firebase_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
+                return firebase_utils_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
             }
             return todo;
         });
@@ -482,30 +491,30 @@ var TodoModel = (function () {
 }());
 exports.TodoModel = TodoModel;
 
-},{"../utils/utils-firebase":12}],11:[function(require,module,exports){
+},{"../utils/firebase-utils":12}],11:[function(require,module,exports){
 "use strict";
-var firebase_config_1 = require('../config/firebase.config');
-var firebase = require('firebase');
-firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
+var firebase_utils_1 = require('./firebase-utils');
 function requireAuth(nextState, replace) {
-    if (null === firebase.auth().currentUser) {
+    if (!firebase_utils_1.Utils.isLoggedIn()) {
+        console.log('REQUIRE AUTH: OK');
         replace({
             pathname: '/login',
             state: { nextPathname: nextState.location.pathname }
         });
+        return true;
     }
+    return false;
 }
 exports.requireAuth = requireAuth;
 
-},{"../config/firebase.config":7,"firebase":41}],12:[function(require,module,exports){
+},{"./firebase-utils":12}],12:[function(require,module,exports){
 "use strict";
+var firebase_config_1 = require('../config/firebase.config');
 var firebase = require('firebase');
+firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
 var Utils = (function () {
     function Utils() {
     }
-    Utils.pluralize = function (count, word) {
-        return count === 1 ? word : word + 's';
-    };
     Utils.uuid = function () {
         var i, random;
         var uuid = '';
@@ -519,22 +528,26 @@ var Utils = (function () {
         }
         return uuid;
     };
+    Utils.pluralize = function (count, word) {
+        return count === 1 ? word : word + 's';
+    };
     Utils.store = function (namespace, data) {
-        console.debug();
-        console.log("store");
         if (null !== firebase.auth().currentUser) {
             var userId = firebase.auth().currentUser.uid;
             if (data) {
                 firebase.database().ref('users/' + userId).set(JSON.stringify(data));
             }
+        }
+        return this.getValues('');
+    };
+    Utils.getValues = function (namespace) {
+        if (null !== firebase.auth().currentUser) {
+            var userId = firebase.auth().currentUser.uid;
             return firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-                console.debug();
-                return (JSON.parse(snapshot.val())) || [];
+                return JSON.parse(snapshot.val()) || [];
             });
         }
-        else {
-            return [];
-        }
+        return new Promise(function () { return []; });
     };
     Utils.extend = function () {
         var objs = [];
@@ -552,11 +565,18 @@ var Utils = (function () {
         }
         return newObj;
     };
+    Utils.isLoggedIn = function () {
+        return null !== firebase.auth().currentUser;
+    };
+    Utils.logIn = function () {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        return firebase.auth().signInWithRedirect(provider);
+    };
     return Utils;
 }());
 exports.Utils = Utils;
 
-},{"firebase":41}],13:[function(require,module,exports){
+},{"../config/firebase.config":7,"firebase":41}],13:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -27103,14 +27123,83 @@ module.exports = function (str) {
 arguments[4][59][0].apply(exports,arguments)
 },{"_process":248,"dup":59}],248:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+(function () {
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
+    }
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
 var queue = [];
 var draining = false;
 var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -27126,7 +27215,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = setTimeout(cleanUpNextTick);
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -27143,7 +27232,7 @@ function drainQueue() {
     }
     currentQueue = null;
     draining = false;
-    clearTimeout(timeout);
+    runClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -27155,7 +27244,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
+        runTimeout(drainQueue);
     }
 };
 

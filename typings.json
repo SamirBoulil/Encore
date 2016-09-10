@@ -6,6 +6,7 @@
     "react-router": "registry:npm/react-router#2.4.0+20160811060709"
   },
   "globalDependencies": {
-    "classnames": "registry:dt/classnames#0.0.0+20160316155526"
+    "classnames": "registry:dt/classnames#0.0.0+20160316155526",
+    "promise": "registry:dt/promise#7.1.1+20160602154553"
   }
 }

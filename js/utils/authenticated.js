@@ -1,13 +1,14 @@
 "use strict";
-var firebase_config_1 = require('../config/firebase.config');
-var firebase = require('firebase');
-firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
+var firebase_utils_1 = require('./firebase-utils');
 function requireAuth(nextState, replace) {
-    if (null === firebase.auth().currentUser) {
+    if (!firebase_utils_1.Utils.isLoggedIn()) {
+        console.log('REQUIRE AUTH: OK');
         replace({
             pathname: '/login',
             state: { nextPathname: nextState.location.pathname }
         });
+        return true;
     }
+    return false;
 }
 exports.requireAuth = requireAuth;

@@ -1,11 +1,10 @@
 "use strict";
+var firebase_config_1 = require('../config/firebase.config');
 var firebase = require('firebase');
+firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
 var Utils = (function () {
     function Utils() {
     }
-    Utils.pluralize = function (count, word) {
-        return count === 1 ? word : word + 's';
-    };
     Utils.uuid = function () {
         var i, random;
         var uuid = '';
@@ -19,25 +18,26 @@ var Utils = (function () {
         }
         return uuid;
     };
-    Utils.store = function (namespace, dataIn, dataOut, cb) {
-        console.debug();
-        console.log("store");
+    Utils.pluralize = function (count, word) {
+        return count === 1 ? word : word + 's';
+    };
+    Utils.store = function (namespace, data) {
         if (null !== firebase.auth().currentUser) {
             var userId = firebase.auth().currentUser.uid;
-            if (dataIn) {
-                firebase.database().ref('users/' + userId).set(JSON.stringify(dataIn));
+            if (data) {
+                firebase.database().ref('users/' + userId).set(JSON.stringify(data));
             }
-            return         }
-        else {
-            return [];
         }
+        return this.getValues('');
     };
-    Utils.get = function () {
-        firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-            dataOut = (JSON.parse(snapshot.val())) || [];
-            cb();
-        });
-
+    Utils.getValues = function (namespace) {
+        if (null !== firebase.auth().currentUser) {
+            var userId = firebase.auth().currentUser.uid;
+            return firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
+                return JSON.parse(snapshot.val()) || [];
+            });
+        }
+        return new Promise(function () { return []; });
     };
     Utils.extend = function () {
         var objs = [];
@@ -54,6 +54,13 @@ var Utils = (function () {
             }
         }
         return newObj;
+    };
+    Utils.isLoggedIn = function () {
+        return null !== firebase.auth().currentUser;
+    };
+    Utils.logIn = function () {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        return firebase.auth().signInWithRedirect(provider);
     };
     return Utils;
 }());
