@@ -4,6 +4,7 @@ This repository is a fork of the typescript + react example part of the [TodoMVC
 
 **usage:** 
 
+    $> make install # to install javascript dependencies as well as typescript dependencies
     $> make # to compile typescript files in js and bundle files using browserify
     $> make run-server # to run a local server on port 9001
 
