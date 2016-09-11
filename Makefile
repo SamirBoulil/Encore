@@ -5,6 +5,10 @@ all:
 	node_modules/typescript/bin/tsc -p $(SOURCE_DIR)
 	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FILE)
 
+install:
+	npm install
+	typings install
+
 run-server:
 	python -m SimpleHTTPServer 9001
 	open http://localhost:9001/
