@@ -5,7 +5,8 @@ interface IAppProps {
 
 interface IAppState {
   editing? : string;
-  nowShowing? : string
+  nowShowing? : string;
+  todos?: Array<ITodo>;
 }
 
 interface ITodoItemProps {

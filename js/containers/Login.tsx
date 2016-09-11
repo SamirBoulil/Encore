@@ -5,39 +5,47 @@
 
 import * as React from 'react';
 import {Utils} from '../utils/firebase-utils';
-// import * as firebase from 'firebase';
+import * as Firebase from 'firebase';
 
 class Login extends React.Component<{}, {}> {
 
   public state : any;
   public refs : any;
   public props : any;
-  public context : any;
+  public context: any;
+  static contextTypes: React.ValidationMap<any> = {
+    router: React.PropTypes.object.isRequired
+    // history: React.PropTypes.object.isRequired
+  };
 
-  constructor(props:any) {
+  constructor(props: any) {
     super(props);
     this.state = {
       error: false
     }
   }
 
-  public handleSubmit(e : React.FormEvent) {
+  public handleSubmit = (e : React.FormEvent) => {
     e.preventDefault();
+    var self = this;
 
-    Utils.logIn().then( function(result: any) {
-      this.context.router.replace('/');
+    var provider = new Firebase.auth.GoogleAuthProvider();
+    Firebase.auth().signInWithRedirect(provider).then(function(result : any) {
+      var location = self.props.location
+      self.context.router.replace('/')
 
       // User signed in!
-      console.log('User signed in!');
-
       // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = result.credential.accessToken;
+      // var token = result.credential.accessToken;
       // The signed-in user info.
-      var user = result.user;
-
-    }).catch((error) => {
-      this.setState({error: error});
-    });
+      // var user = result.user;
+    }).catch(function(error) {
+      self.setState({error: error});
+    })
+    // Utils.logIn().then(function(result: any) {
+    // }).catch(function(error) {
+    //   self.setState({error: error});
+    // });
   }
 
   public render() {

@@ -8,22 +8,28 @@ import * as ReactDom from "react-dom";
 import { TodoModel } from "../models/TodoModel";
 import { TodoFooter } from "./TodoFooter";
 import { TodoItem } from "./TodoItem";
+import { Utils } from "../utils/firebase-utils";
 import { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, IN_PROGRESS_TODOS, ENTER_KEY } from "../config/constants";
 
 class TodoList extends React.Component<IAppProps, IAppState> {
 
   public state : IAppState;
 
-  constructor(props : IAppProps) {
+  constructor(props : any) {
     super(props);
     this.state = {
       nowShowing: ALL_TODOS,
-      editing: null
+      editing: null,
+      todos: []
     };
+  }
+  public componentWillMount() {
+    Utils.getValues('').then((newTodos) => {
+      this.setTodos(newTodos);
+    });
   }
 
   public componentDidMount() {
-    var setState = this.setState;
     // var router = Router({
     //   '/': setState.bind(this, {nowShowing: ALL_TODOS}),
     //   '/active': setState.bind(this, {nowShowing: ACTIVE_TODOS}),
@@ -31,6 +37,10 @@ class TodoList extends React.Component<IAppProps, IAppState> {
     //   '/completed': setState.bind(this, {nowShowing: COMPLETED_TODOS})
     // });
     // router.init('/');
+  }
+
+  public componentDidUpdate() {
+    Utils.store('', this.state.todos);
   }
 
   public handleNewTodoKeyDown(event : React.KeyboardEvent) {
@@ -43,27 +53,33 @@ class TodoList extends React.Component<IAppProps, IAppState> {
     var val = ReactDom.findDOMNode<HTMLInputElement>(this.refs["newField"]).value.trim();
 
     if (val) {
-      this.props.route.model.addTodo(val);
       ReactDom.findDOMNode<HTMLInputElement>(this.refs["newField"]).value = '';
+
+      let newTodos = TodoModel.addTodo(this.state.todos, val);
+      this.setTodos(newTodos);
     }
   }
 
   public toggleAllCompleted(event : React.FormEvent) {
     var target : any = event.target;
     var checked = target.checked;
-    this.props.route.model.toggleAllCompleted(checked);
+    let newTodos = TodoModel.toggleAllCompleted(this.state.todos, checked);
+    this.setTodos(newTodos);
   }
 
   public toggleCompleted(todoToToggle : ITodo) {
-    this.props.route.model.toggleCompleted(todoToToggle);
+    let newTodos = TodoModel.toggleCompleted(this.state.todos, todoToToggle);
+    this.setTodos(newTodos);
   }
 
   public destroy(todo : ITodo) {
-    this.props.route.model.destroy(todo);
+    let newTodos = TodoModel.destroy(this.state.todos, todo);
+    this.setTodos(newTodos);
   }
 
   public toggleInProgress(todo : ITodo) {
-    this.props.route.model.toggleInProgress(todo);
+    let newTodos = TodoModel.toggleInProgress(this.state.todos, todo);
+    this.setTodos(newTodos);
   }
 
   public edit(todo : ITodo) {
@@ -72,10 +88,11 @@ class TodoList extends React.Component<IAppProps, IAppState> {
     this.setState(newState);
   }
 
-  public save(todoToSave : ITodo, text : String) {
-    this.props.route.model.save(todoToSave, text);
+  public save(todoToSave : ITodo, text : string) {
+    let newTodos = TodoModel.save(this.state.todos, todoToSave, text);
     var newState = this.state;
     newState.editing = null;
+    newState.todos = newTodos;
     this.setState(newState);
   }
 
@@ -86,13 +103,20 @@ class TodoList extends React.Component<IAppProps, IAppState> {
   }
 
   public clearCompleted() {
-    this.props.route.model.clearCompleted();
+    let newTodos = TodoModel.clearCompleted(this.state.todos);
+    this.setTodos(newTodos);
+  }
+
+  public setTodos(todos: Array<ITodo>) : void {
+    let newState = this.state;
+    newState['todos'] = todos;
+    this.setState(newState);
   }
 
   public render() {
     var footer;
     var main;
-    const todos = this.props.route.model.todos;
+    const todos = this.state.todos;
 
     var shownTodos = todos.filter((todo) => {
       switch (this.state.nowShowing) {
@@ -101,14 +125,14 @@ class TodoList extends React.Component<IAppProps, IAppState> {
       case COMPLETED_TODOS:
         return todo.completed;
       case IN_PROGRESS_TODOS:
-        return this.props.route.model.isInProgress(todo);
+        return TodoModel.isInProgress(todo);
       default:
         return true;
       }
     });
 
     shownTodos = shownTodos.sort((todo1, todo2) => {
-        if (this.props.route.model.isInProgress(todo1) === this.props.route.model.isInProgress(todo2)) {
+        if (TodoModel.isInProgress(todo1) === TodoModel.isInProgress(todo2)) {
           if (todo1.retries > todo2.retries) {
             return -1;
           } else if (todo1.retries === todo2.retries){
@@ -118,7 +142,7 @@ class TodoList extends React.Component<IAppProps, IAppState> {
           }
         }
 
-        if (this.props.route.model.isInProgress(todo1) && !this.props.route.model.isInProgress(todo2)) {
+        if (TodoModel.isInProgress(todo1) && !TodoModel.isInProgress(todo2)) {
           return -1;
         }
 
@@ -134,7 +158,7 @@ class TodoList extends React.Component<IAppProps, IAppState> {
           onDestroy={this.destroy.bind(this, todo)}
           onEdit={this.edit.bind(this, todo)}
           editing={this.state.editing === todo.id}
-          inProgress={this.props.route.model.isInProgress(todo)}
+          inProgress={TodoModel.isInProgress(todo)}
           onSave={this.save.bind(this, todo)}
           onCancel={ e => this.cancel() }
           onToggleInProgress={this.toggleInProgress.bind(this, todo)}
@@ -150,7 +174,7 @@ class TodoList extends React.Component<IAppProps, IAppState> {
 
     var that = this;
     var inProgressTodoCount = todos.reduce(function (accum, todo) {
-      return that.props.route.model.isInProgress(todo) ? accum : accum + 1;
+      return TodoModel.isInProgress(todo) ? accum : accum + 1;
     }, 0);
     var inProgressCount = todos.length - inProgressTodoCount;
 

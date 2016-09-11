@@ -3,10 +3,7 @@
 /*jshint trailing:false */
 /*jshint newcap:false */
 
-import {FIREBASE_CONFIG} from '../config/firebase.config';
 import * as firebase from 'firebase';
-
-firebase.initializeApp(FIREBASE_CONFIG);
 
 class Utils {
 
@@ -38,8 +35,6 @@ class Utils {
         firebase.database().ref('users/' + userId).set(JSON.stringify(data));
       }
     }
-
-    return this.getValues('');
   }
 
   public static getValues(namespace: string) : any {

@@ -24,16 +24,15 @@ var Main = (function (_super) {
                 loggedIn: (null !== firebaseUser)
             });
             if (firebaseUser) {
-                console.log("Logged IN", firebaseUser);
-                _this.props.history.pushState("/");
-            }
-            else {
-                console.log("Not logged in");
+                _this.context.router.replace("/");
             }
         });
     };
     Main.prototype.render = function () {
         return (React.createElement("div", {className: "container"}, React.createElement("div", {className: "row"}, this.props.children)));
+    };
+    Main.contextTypes = {
+        router: React.PropTypes.object.isRequired
     };
     return Main;
 }(React.Component));

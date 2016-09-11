@@ -19,13 +19,12 @@ let Router = ReactRouter.Router;
 let Route = ReactRouter.Route;
 let hashHistory = ReactRouter.hashHistory;
 let IndexRoute = ReactRouter.IndexRoute;
-let model = new TodoModel("react-todos");
 
 function render() {
   var routes = (
     <Router history={hashHistory}>
       <Route path="/" component={Main} >
-        <IndexRoute component={TodoList} model={model} onEnter={requireAuth} />
+        <IndexRoute component={TodoList} onEnter={requireAuth} />
         <Route path="login" component={Login} />
         <Route path="logout" component={Logout} />
       </Route>
@@ -33,5 +32,5 @@ function render() {
   );
   ReactDOM.render(routes, document.getElementsByClassName("todoapp")[0]);
 }
-model.subscribe(render);
+
 render();

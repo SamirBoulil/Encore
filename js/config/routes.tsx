@@ -13,12 +13,11 @@ let Router = ReactRouter.Router;
 let Route = ReactRouter.Route;
 let hashHistory = ReactRouter.hashHistory;
 let IndexRoute = ReactRouter.IndexRoute;
-let model = new TodoModel('react-todos');
 
 var routes = (
   <Router history={hashHistory}>
     <Route path='/' component={Main} >
-      <IndexRoute component={TodoList} model={model} />
+      <IndexRoute component={TodoList} />
     </Route>
   </Router>
 );

@@ -3,22 +3,19 @@
 /*jshint trailing:false */
 /*jshint newcap:false */
 
-// import {FIREBASE_CONFIG} from '../config/firebase.config';
-
-import * as React from 'react';
+import {FIREBASE_CONFIG} from '../config/Firebase.config';
+import * as firebase from 'firebase';
 import {Utils} from './firebase-utils';
 
-function requireAuth(nextState, replace) : boolean {
-    if (!Utils.isLoggedIn()) {
-        console.log('REQUIRE AUTH: OK');
-        replace({
-            pathname: '/login',
-            state: { nextPathname: nextState.location.pathname }
-        })
-        return true;
-    }
+firebase.initializeApp(FIREBASE_CONFIG);
 
-    return false
+function requireAuth(nextState, replace) {
+  if (null === firebase.auth().currentUser) {
+    replace({
+      pathname: '/login',
+      state: { nextPathname: nextState.location.pathname }
+    })
+  }
 }
 
 export { requireAuth };

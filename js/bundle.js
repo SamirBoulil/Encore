@@ -25,16 +25,15 @@ var Main = (function (_super) {
                 loggedIn: (null !== firebaseUser)
             });
             if (firebaseUser) {
-                console.log("Logged IN", firebaseUser);
-                _this.props.history.pushState("/");
-            }
-            else {
-                console.log("Not logged in");
+                _this.context.router.replace("/");
             }
         });
     };
     Main.prototype.render = function () {
         return (React.createElement("div", {className: "container"}, React.createElement("div", {className: "row"}, this.props.children)));
+    };
+    Main.contextTypes = {
+        router: React.PropTypes.object.isRequired
     };
     return Main;
 }(React.Component));
@@ -49,21 +48,18 @@ var Main_1 = require("./Main");
 var Login_1 = require("./containers/Login");
 var Logout_1 = require("./containers/Logout");
 var TodoList_1 = require("./components/TodoList");
-var TodoModel_1 = require("./models/TodoModel");
 var authenticated_1 = require("./utils/authenticated");
 var Router = ReactRouter.Router;
 var Route = ReactRouter.Route;
 var hashHistory = ReactRouter.hashHistory;
 var IndexRoute = ReactRouter.IndexRoute;
-var model = new TodoModel_1.TodoModel("react-todos");
 function render() {
-    var routes = (React.createElement(Router, {history: hashHistory}, React.createElement(Route, {path: "/", component: Main_1.Main}, React.createElement(IndexRoute, {component: TodoList_1.TodoList, model: model, onEnter: authenticated_1.requireAuth}), React.createElement(Route, {path: "login", component: Login_1.Login}), React.createElement(Route, {path: "logout", component: Logout_1.Logout}))));
+    var routes = (React.createElement(Router, {history: hashHistory}, React.createElement(Route, {path: "/", component: Main_1.Main}, React.createElement(IndexRoute, {component: TodoList_1.TodoList, onEnter: authenticated_1.requireAuth}), React.createElement(Route, {path: "login", component: Login_1.Login}), React.createElement(Route, {path: "logout", component: Logout_1.Logout}))));
     ReactDOM.render(routes, document.getElementsByClassName("todoapp")[0]);
 }
-model.subscribe(render);
 render();
 
-},{"./Main":1,"./components/TodoList":5,"./containers/Login":8,"./containers/Logout":9,"./models/TodoModel":10,"./utils/authenticated":11,"react":245,"react-dom":64,"react-router":94}],3:[function(require,module,exports){
+},{"./Main":1,"./components/TodoList":5,"./containers/Login":8,"./containers/Logout":9,"./utils/authenticated":11,"react":245,"react-dom":64,"react-router":94}],3:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -91,7 +87,7 @@ var TodoFooter = (function (_super) {
 }(React.Component));
 exports.TodoFooter = TodoFooter;
 
-},{"../config/constants":6,"../utils/firebase-utils":12,"react":245}],4:[function(require,module,exports){
+},{"../config/constants":7,"../utils/firebase-utils":12,"react":245}],4:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -166,7 +162,7 @@ var TodoItem = (function (_super) {
 }(React.Component));
 exports.TodoItem = TodoItem;
 
-},{"../config/constants":6,"react":245,"react-dom":64}],5:[function(require,module,exports){
+},{"../config/constants":7,"react":245,"react-dom":64}],5:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -175,8 +171,10 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var React = require("react");
 var ReactDom = require("react-dom");
+var TodoModel_1 = require("../models/TodoModel");
 var TodoFooter_1 = require("./TodoFooter");
 var TodoItem_1 = require("./TodoItem");
+var firebase_utils_1 = require("../utils/firebase-utils");
 var constants_1 = require("../config/constants");
 var TodoList = (function (_super) {
     __extends(TodoList, _super);
@@ -184,11 +182,20 @@ var TodoList = (function (_super) {
         _super.call(this, props);
         this.state = {
             nowShowing: constants_1.ALL_TODOS,
-            editing: null
+            editing: null,
+            todos: []
         };
     }
+    TodoList.prototype.componentWillMount = function () {
+        var _this = this;
+        firebase_utils_1.Utils.getValues('').then(function (newTodos) {
+            _this.setTodos(newTodos);
+        });
+    };
     TodoList.prototype.componentDidMount = function () {
-        var setState = this.setState;
+    };
+    TodoList.prototype.componentDidUpdate = function () {
+        firebase_utils_1.Utils.store('', this.state.todos);
     };
     TodoList.prototype.handleNewTodoKeyDown = function (event) {
         if (event.keyCode !== constants_1.ENTER_KEY) {
@@ -197,23 +204,28 @@ var TodoList = (function (_super) {
         event.preventDefault();
         var val = ReactDom.findDOMNode(this.refs["newField"]).value.trim();
         if (val) {
-            this.props.route.model.addTodo(val);
             ReactDom.findDOMNode(this.refs["newField"]).value = '';
+            var newTodos = TodoModel_1.TodoModel.addTodo(this.state.todos, val);
+            this.setTodos(newTodos);
         }
     };
     TodoList.prototype.toggleAllCompleted = function (event) {
         var target = event.target;
         var checked = target.checked;
-        this.props.route.model.toggleAllCompleted(checked);
+        var newTodos = TodoModel_1.TodoModel.toggleAllCompleted(this.state.todos, checked);
+        this.setTodos(newTodos);
     };
     TodoList.prototype.toggleCompleted = function (todoToToggle) {
-        this.props.route.model.toggleCompleted(todoToToggle);
+        var newTodos = TodoModel_1.TodoModel.toggleCompleted(this.state.todos, todoToToggle);
+        this.setTodos(newTodos);
     };
     TodoList.prototype.destroy = function (todo) {
-        this.props.route.model.destroy(todo);
+        var newTodos = TodoModel_1.TodoModel.destroy(this.state.todos, todo);
+        this.setTodos(newTodos);
     };
     TodoList.prototype.toggleInProgress = function (todo) {
-        this.props.route.model.toggleInProgress(todo);
+        var newTodos = TodoModel_1.TodoModel.toggleInProgress(this.state.todos, todo);
+        this.setTodos(newTodos);
     };
     TodoList.prototype.edit = function (todo) {
         var newState = this.state;
@@ -221,9 +233,10 @@ var TodoList = (function (_super) {
         this.setState(newState);
     };
     TodoList.prototype.save = function (todoToSave, text) {
-        this.props.route.model.save(todoToSave, text);
+        var newTodos = TodoModel_1.TodoModel.save(this.state.todos, todoToSave, text);
         var newState = this.state;
         newState.editing = null;
+        newState.todos = newTodos;
         this.setState(newState);
     };
     TodoList.prototype.cancel = function () {
@@ -232,13 +245,19 @@ var TodoList = (function (_super) {
         this.setState(newState);
     };
     TodoList.prototype.clearCompleted = function () {
-        this.props.route.model.clearCompleted();
+        var newTodos = TodoModel_1.TodoModel.clearCompleted(this.state.todos);
+        this.setTodos(newTodos);
+    };
+    TodoList.prototype.setTodos = function (todos) {
+        var newState = this.state;
+        newState['todos'] = todos;
+        this.setState(newState);
     };
     TodoList.prototype.render = function () {
         var _this = this;
         var footer;
         var main;
-        var todos = this.props.route.model.todos;
+        var todos = this.state.todos;
         var shownTodos = todos.filter(function (todo) {
             switch (_this.state.nowShowing) {
                 case constants_1.ACTIVE_TODOS:
@@ -246,13 +265,13 @@ var TodoList = (function (_super) {
                 case constants_1.COMPLETED_TODOS:
                     return todo.completed;
                 case constants_1.IN_PROGRESS_TODOS:
-                    return _this.props.route.model.isInProgress(todo);
+                    return TodoModel_1.TodoModel.isInProgress(todo);
                 default:
                     return true;
             }
         });
         shownTodos = shownTodos.sort(function (todo1, todo2) {
-            if (_this.props.route.model.isInProgress(todo1) === _this.props.route.model.isInProgress(todo2)) {
+            if (TodoModel_1.TodoModel.isInProgress(todo1) === TodoModel_1.TodoModel.isInProgress(todo2)) {
                 if (todo1.retries > todo2.retries) {
                     return -1;
                 }
@@ -263,13 +282,13 @@ var TodoList = (function (_super) {
                     return 1;
                 }
             }
-            if (_this.props.route.model.isInProgress(todo1) && !_this.props.route.model.isInProgress(todo2)) {
+            if (TodoModel_1.TodoModel.isInProgress(todo1) && !TodoModel_1.TodoModel.isInProgress(todo2)) {
                 return -1;
             }
             return 1;
         });
         var todoItems = shownTodos.map(function (todo) {
-            return (React.createElement(TodoItem_1.TodoItem, {key: todo.id, todo: todo, onToggleCompleted: _this.toggleCompleted.bind(_this, todo), onDestroy: _this.destroy.bind(_this, todo), onEdit: _this.edit.bind(_this, todo), editing: _this.state.editing === todo.id, inProgress: _this.props.route.model.isInProgress(todo), onSave: _this.save.bind(_this, todo), onCancel: function (e) { return _this.cancel(); }, onToggleInProgress: _this.toggleInProgress.bind(_this, todo)}));
+            return (React.createElement(TodoItem_1.TodoItem, {key: todo.id, todo: todo, onToggleCompleted: _this.toggleCompleted.bind(_this, todo), onDestroy: _this.destroy.bind(_this, todo), onEdit: _this.edit.bind(_this, todo), editing: _this.state.editing === todo.id, inProgress: TodoModel_1.TodoModel.isInProgress(todo), onSave: _this.save.bind(_this, todo), onCancel: function (e) { return _this.cancel(); }, onToggleInProgress: _this.toggleInProgress.bind(_this, todo)}));
         });
         var activeTodoCount = todos.reduce(function (accum, todo) {
             return todo.completed ? accum : accum + 1;
@@ -277,7 +296,7 @@ var TodoList = (function (_super) {
         var completedCount = todos.length - activeTodoCount;
         var that = this;
         var inProgressTodoCount = todos.reduce(function (accum, todo) {
-            return that.props.route.model.isInProgress(todo) ? accum : accum + 1;
+            return TodoModel_1.TodoModel.isInProgress(todo) ? accum : accum + 1;
         }, 0);
         var inProgressCount = todos.length - inProgressTodoCount;
         if (activeTodoCount || completedCount || inProgressCount) {
@@ -293,7 +312,17 @@ var TodoList = (function (_super) {
 }(React.Component));
 exports.TodoList = TodoList;
 
-},{"../config/constants":6,"./TodoFooter":3,"./TodoItem":4,"react":245,"react-dom":64}],6:[function(require,module,exports){
+},{"../config/constants":7,"../models/TodoModel":10,"../utils/firebase-utils":12,"./TodoFooter":3,"./TodoItem":4,"react":245,"react-dom":64}],6:[function(require,module,exports){
+"use strict";
+var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDIerHcoq8ZDwZTwp6fyEdNd6YWcO9g4ws",
+    authDomain: "encore-6b291.firebaseapp.com",
+    databaseURL: "https://encore-6b291.firebaseio.com",
+    storageBucket: "encore-6b291.appspot.com",
+};
+exports.FIREBASE_CONFIG = FIREBASE_CONFIG;
+
+},{}],7:[function(require,module,exports){
 "use strict";
 var ALL_TODOS = 'all';
 exports.ALL_TODOS = ALL_TODOS;
@@ -308,16 +337,6 @@ exports.ENTER_KEY = ENTER_KEY;
 var ESCAPE_KEY = 27;
 exports.ESCAPE_KEY = ESCAPE_KEY;
 
-},{}],7:[function(require,module,exports){
-"use strict";
-var FIREBASE_CONFIG = {
-    apiKey: "AIzaSyDIerHcoq8ZDwZTwp6fyEdNd6YWcO9g4ws",
-    authDomain: "encore-6b291.firebaseapp.com",
-    databaseURL: "https://encore-6b291.firebaseio.com",
-    storageBucket: "encore-6b291.appspot.com",
-};
-exports.FIREBASE_CONFIG = FIREBASE_CONFIG;
-
 },{}],8:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
@@ -326,36 +345,39 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require('react');
-var firebase_utils_1 = require('../utils/firebase-utils');
+var Firebase = require('firebase');
 var Login = (function (_super) {
     __extends(Login, _super);
     function Login(props) {
+        var _this = this;
         _super.call(this, props);
+        this.handleSubmit = function (e) {
+            e.preventDefault();
+            var self = _this;
+            var provider = new Firebase.auth.GoogleAuthProvider();
+            Firebase.auth().signInWithRedirect(provider).then(function (result) {
+                var location = self.props.location;
+                self.context.router.replace('/');
+            }).catch(function (error) {
+                self.setState({ error: error });
+            });
+        };
         this.state = {
             error: false
         };
     }
-    Login.prototype.handleSubmit = function (e) {
-        var _this = this;
-        e.preventDefault();
-        firebase_utils_1.Utils.logIn().then(function (result) {
-            this.context.router.replace('/');
-            console.log('User signed in!');
-            var token = result.credential.accessToken;
-            var user = result.user;
-        }).catch(function (error) {
-            _this.setState({ error: error });
-        });
-    };
     Login.prototype.render = function () {
         var errors = this.state.error ? React.createElement("p", null, " ", this.state.error, " ") : '';
         return (React.createElement("div", {className: "col-sm-6 col-sm-offset-3"}, React.createElement("form", {onSubmit: this.handleSubmit}, React.createElement("button", {type: "submit", className: "btn btn-primary"}, "Login"))));
+    };
+    Login.contextTypes = {
+        router: React.PropTypes.object.isRequired
     };
     return Login;
 }(React.Component));
 exports.Login = Login;
 
-},{"../utils/firebase-utils":12,"react":245}],9:[function(require,module,exports){
+},{"firebase":41,"react":245}],9:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -387,86 +409,64 @@ exports.Logout = Logout;
 "use strict";
 var firebase_utils_1 = require("../utils/firebase-utils");
 var TodoModel = (function () {
-    function TodoModel(key) {
-        var _this = this;
-        this.onChanges = [];
-        this.key = key;
-        firebase_utils_1.Utils.getValues('').then(function (values) {
-            console.log('Values retrieved from firebase');
-            console.log(values);
-            _this.todos = values;
-            _this.refreshTodos();
-        });
+    function TodoModel() {
     }
-    TodoModel.prototype.getValues = function (todo) {
-        this.todos = todo;
-    };
-    TodoModel.prototype.subscribe = function (onChange) {
-        this.onChanges.push(onChange);
-    };
-    TodoModel.prototype.inform = function () {
-        console.log('informing every one model is updated');
-        var self = this;
-        firebase_utils_1.Utils.store('', this.todos).then(function (values) {
-            self.onChanges.forEach(function (cb) { cb(); });
-        });
-    };
-    TodoModel.prototype.addTodo = function (title) {
-        this.todos = this.todos.concat({
+    TodoModel.addTodo = function (todos, title) {
+        todos = todos.concat({
             id: firebase_utils_1.Utils.uuid(),
             title: title,
             completed: false,
             inProgressDate: null,
             retries: 0
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.toggleAllCompleted = function (checked) {
-        this.todos = this.todos.map(function (todo) {
+    TodoModel.toggleAllCompleted = function (todos, checked) {
+        todos = todos.map(function (todo) {
             return firebase_utils_1.Utils.extend({}, todo, { completed: checked });
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.toggleCompleted = function (todoToToggleCompleted) {
-        this.todos = this.todos.map(function (todo) {
+    TodoModel.toggleCompleted = function (todos, todoToToggleCompleted) {
+        todos = todos.map(function (todo) {
             return todo !== todoToToggleCompleted ?
                 todo :
                 firebase_utils_1.Utils.extend({}, todo, { completed: !todo.completed });
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.destroy = function (todo) {
-        this.todos = this.todos.filter(function (candidate) {
+    TodoModel.destroy = function (todos, todo) {
+        todos = todos.filter(function (candidate) {
             return candidate !== todo;
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.toggleInProgress = function (todoToToggleInProgress) {
-        var that = this;
-        this.todos = this.todos.map(function (todo) {
+    TodoModel.toggleInProgress = function (todos, todoToToggleInProgress) {
+        var _this = this;
+        todos = todos.map(function (todo) {
             if (todo === todoToToggleInProgress && !todo.completed) {
-                var newInProgressDate = !that.isInProgress(todo) ? new Date() : null;
+                var newInProgressDate = !_this.isInProgress(todo) ? new Date() : null;
                 return firebase_utils_1.Utils.extend({}, todo, { inProgressDate: newInProgressDate });
             }
             else {
                 return todo;
             }
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.save = function (todoToSave, text) {
-        this.todos = this.todos.map(function (todo) {
+    TodoModel.save = function (todos, todoToSave, text) {
+        todos = todos.map(function (todo) {
             return todo !== todoToSave ? todo : firebase_utils_1.Utils.extend({}, todo, { title: text });
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.clearCompleted = function () {
-        this.todos = this.todos.filter(function (todo) {
+    TodoModel.clearCompleted = function (todos) {
+        todos = todos.filter(function (todo) {
             return !todo.completed;
         });
-        this.inform();
+        return todos;
     };
-    TodoModel.prototype.isInProgress = function (todo) {
+    TodoModel.isInProgress = function (todo) {
         if (todo.inProgressDate === null) {
             return false;
         }
@@ -476,16 +476,16 @@ var TodoModel = (function () {
             todoInProgressDate.getMonth() === today.getMonth() &&
             todoInProgressDate.getDate() === today.getDate();
     };
-    TodoModel.prototype.refreshTodos = function () {
+    TodoModel.refreshTodos = function (todos) {
         var _this = this;
-        this.todos = this.todos.map(function (todo) {
+        todos = todos.map(function (todo) {
             if (!_this.isInProgress(todo) && todo.inProgressDate !== null) {
                 var newRetry = todo.retries + 1;
                 return firebase_utils_1.Utils.extend({}, todo, { retries: newRetry, inProgressDate: null });
             }
             return todo;
         });
-        this.inform();
+        return todos;
     };
     return TodoModel;
 }());
@@ -493,25 +493,22 @@ exports.TodoModel = TodoModel;
 
 },{"../utils/firebase-utils":12}],11:[function(require,module,exports){
 "use strict";
-var firebase_utils_1 = require('./firebase-utils');
+var Firebase_config_1 = require('../config/Firebase.config');
+var firebase = require('firebase');
+firebase.initializeApp(Firebase_config_1.FIREBASE_CONFIG);
 function requireAuth(nextState, replace) {
-    if (!firebase_utils_1.Utils.isLoggedIn()) {
-        console.log('REQUIRE AUTH: OK');
+    if (null === firebase.auth().currentUser) {
         replace({
             pathname: '/login',
             state: { nextPathname: nextState.location.pathname }
         });
-        return true;
     }
-    return false;
 }
 exports.requireAuth = requireAuth;
 
-},{"./firebase-utils":12}],12:[function(require,module,exports){
+},{"../config/Firebase.config":6,"firebase":41}],12:[function(require,module,exports){
 "use strict";
-var firebase_config_1 = require('../config/firebase.config');
 var firebase = require('firebase');
-firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
 var Utils = (function () {
     function Utils() {
     }
@@ -538,7 +535,6 @@ var Utils = (function () {
                 firebase.database().ref('users/' + userId).set(JSON.stringify(data));
             }
         }
-        return this.getValues('');
     };
     Utils.getValues = function (namespace) {
         if (null !== firebase.auth().currentUser) {
@@ -576,7 +572,7 @@ var Utils = (function () {
 }());
 exports.Utils = Utils;
 
-},{"../config/firebase.config":7,"firebase":41}],13:[function(require,module,exports){
+},{"firebase":41}],13:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -27123,83 +27119,14 @@ module.exports = function (str) {
 arguments[4][59][0].apply(exports,arguments)
 },{"_process":248,"dup":59}],248:[function(require,module,exports){
 // shim for using process in browser
+
 var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-(function () {
-    try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
-        }
-    }
-    try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
-        }
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
 var queue = [];
 var draining = false;
 var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -27215,7 +27142,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = runTimeout(cleanUpNextTick);
+    var timeout = setTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -27232,7 +27159,7 @@ function drainQueue() {
     }
     currentQueue = null;
     draining = false;
-    runClearTimeout(timeout);
+    clearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -27244,7 +27171,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
+        setTimeout(drainQueue, 0);
     }
 };
 

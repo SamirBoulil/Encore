@@ -1,7 +1,5 @@
 "use strict";
-var firebase_config_1 = require('../config/firebase.config');
 var firebase = require('firebase');
-firebase.initializeApp(firebase_config_1.FIREBASE_CONFIG);
 var Utils = (function () {
     function Utils() {
     }
@@ -28,7 +26,6 @@ var Utils = (function () {
                 firebase.database().ref('users/' + userId).set(JSON.stringify(data));
             }
         }
-        return this.getValues('');
     };
     Utils.getValues = function (namespace) {
         if (null !== firebase.auth().currentUser) {
