@@ -32,7 +32,7 @@ class Utils {
     if (null !== firebase.auth().currentUser) {
       var userId = firebase.auth().currentUser.uid;
       if (data) {
-        firebase.database().ref('users/' + userId).set(JSON.stringify(data));
+        firebase.database().ref('users/' + userId).set(data);
       }
     }
   }

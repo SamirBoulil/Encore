@@ -1,9 +1,10 @@
+TARGET_FOLDER=dist
 SOURCE_DIR=js
-TARGET_FILE=dist/bundle.js
+TARGET_FILE=js/bundle.js
 
 all:
 	node_modules/typescript/bin/tsc -p $(SOURCE_DIR)
-	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FILE)
+	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FOLDER)/$(TARGET_FILE)
 
 install:
 	npm install
@@ -13,3 +14,14 @@ run-server:
 	python -m SimpleHTTPServer 9001
 	open http://localhost:9001/
 
+run-server-prod:
+	cd dist && python -m SimpleHTTPServer 9002 dist
+	open http://localhost:9002/
+	cd ..
+
+deploy:
+	cat node_modules/todomvc-common/base.css node_modules/todomvc-app-css/index.css > $(TARGET_FOLDER)/app.css
+	mkdir -p dist/js/node_modules
+	cp -rf node_modules/todomvc-common dist/js/node_modules/.
+	cp -rf node_modules/react dist/js/node_modules/.
+	cp -rf node_modules/classnames dist/js/node_modules/.
