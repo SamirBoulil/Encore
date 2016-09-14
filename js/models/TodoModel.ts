@@ -73,22 +73,22 @@ class TodoModel {
   }
 
   public static isInProgress(todo : ITodo) : boolean{
-    if (todo.inProgressDate === null) {
+    if (todo.inProgressDate === null || typeof(todo.inProgressDate) === 'undefined') {
       return false;
     }
+    var timeDiff = Math.abs(new Date().getTime() - new Date(todo.inProgressDate.toString()).getTime());
+    var diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
 
-    var today = new Date();
-    var todoInProgressDate = new Date(todo.inProgressDate.toString());
-
-    return todoInProgressDate.getFullYear() === today.getFullYear() &&
-    todoInProgressDate.getMonth() === today.getMonth() &&
-    todoInProgressDate.getDate() === today.getDate();
+    return diffDays === 0;
   }
 
   public static refreshTodos(todos: Array<ITodo>) : Array<ITodo> {
     todos = todos.map((todo) => {
-      if (!this.isInProgress(todo) && todo.inProgressDate !== null) {
-        var newRetry = todo.retries + 1 ;
+      if (!this.isInProgress(todo) && todo.inProgressDate !== null && typeof(todo.inProgressDate) !== 'undefined') {
+        var timeDiff = Math.abs(new Date().getTime() - new Date(todo.inProgressDate.toString()).getTime());
+        var diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
+        var newRetry = (todo.retries + diffDays) % 7;
+
         return Utils.extend({}, todo, {retries: newRetry, inProgressDate: null});
       }
 

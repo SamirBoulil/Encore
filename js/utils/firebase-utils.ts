@@ -32,11 +32,25 @@ class Utils {
     if (null !== firebase.auth().currentUser) {
       var userId = firebase.auth().currentUser.uid;
       if (data) {
-        if (typeof(data.inProgressDate) !== 'undefined' || data.inProgressDate !== null ) {
-           data.inProgressDate = '' + data.inProgressDate;
+        if (typeof(data.inProgressDate) !== 'undefined' && data.inProgressDate !== null) {
+          data.inProgressDate = '' + data.inProgressDate;
         }
-        console.log(data);
         firebase.database().ref('users/' + userId + '/todos/' + data['id']).set(data);
+      }
+    }
+  }
+
+  public static storeValues(data? : any) {
+    if (null !== firebase.auth().currentUser) {
+      var userId = firebase.auth().currentUser.uid;
+      if (data) {
+        var newData = data.map((todo) => {
+          if (typeof(todo.inProgressDate) !== 'undefined' && todo.inProgressDate !== null) {
+            todo.inProgressDate = '' + todo.inProgressDate;
+          }
+          return todo;
+        });
+        firebase.database().ref('users/' + userId + '/todos/').set(newData);
       }
     }
   }
@@ -44,13 +58,8 @@ class Utils {
   public static getValues(namespace: string) : any {
     if (null !== firebase.auth().currentUser) {
       var userId = firebase.auth().currentUser.uid;
-      return firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-        var todos = [];
-        var snapshot = snapshot.val() || {};
-        for (var todoId in snapshot.todos) {
-           todos.push(snapshot.todos[todoId]);
-        }
-        return todos;
+      return firebase.database().ref('users/' + userId + '/todos/').once('value').then(function (snapshot) {
+        return snapshot.val() || [];
       });
     }
 

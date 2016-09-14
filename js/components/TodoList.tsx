@@ -25,6 +25,7 @@ class TodoList extends React.Component<IAppProps, IAppState> {
   }
   public componentWillMount() {
     Utils.getValues('').then((newTodos) => {
+      newTodos = TodoModel.refreshTodos(newTodos);
       this.setTodos(newTodos);
     });
   }
@@ -40,9 +41,10 @@ class TodoList extends React.Component<IAppProps, IAppState> {
   }
 
   public componentDidUpdate() {
-    this.state.todos.map((todo) => {
-      Utils.storeValue(todo);
-    });
+    // this.state.todos.map((todo) => {
+    //   Utils.storeValue(todo);
+    // });
+    Utils.storeValues(this.state.todos);
   }
 
   public handleNewTodoKeyDown(event : React.KeyboardEvent) {
