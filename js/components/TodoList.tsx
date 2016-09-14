@@ -40,7 +40,9 @@ class TodoList extends React.Component<IAppProps, IAppState> {
   }
 
   public componentDidUpdate() {
-    Utils.store('', this.state.todos);
+    this.state.todos.map((todo) => {
+      Utils.storeValue(todo);
+    });
   }
 
   public handleNewTodoKeyDown(event : React.KeyboardEvent) {

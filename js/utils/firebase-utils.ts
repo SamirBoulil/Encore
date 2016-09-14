@@ -28,11 +28,15 @@ class Utils {
     return count === 1 ? word : word + 's';
   }
 
-  public static store(namespace : string, data? : any) {
+  public static storeValue(data? : any) {
     if (null !== firebase.auth().currentUser) {
       var userId = firebase.auth().currentUser.uid;
       if (data) {
-        firebase.database().ref('users/' + userId).set(data);
+        if (typeof(data.inProgressDate) !== 'undefined' || data.inProgressDate !== null ) {
+           data.inProgressDate = '' + data.inProgressDate;
+        }
+        console.log(data);
+        firebase.database().ref('users/' + userId + '/todos/' + data['id']).set(data);
       }
     }
   }
@@ -41,7 +45,12 @@ class Utils {
     if (null !== firebase.auth().currentUser) {
       var userId = firebase.auth().currentUser.uid;
       return firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-        return JSON.parse(snapshot.val()) || [];
+        var todos = [];
+        var snapshot = snapshot.val() || {};
+        for (var todoId in snapshot.todos) {
+           todos.push(snapshot.todos[todoId]);
+        }
+        return todos;
       });
     }
 

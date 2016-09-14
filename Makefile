@@ -1,8 +1,14 @@
 TARGET_FOLDER=dist
-SOURCE_DIR=js
+PUBLIC_FOLDER=public
 TARGET_FILE=js/bundle.js
+SOURCE_DIR=js
 
 all:
+	node_modules/typescript/bin/tsc -p $(SOURCE_DIR)
+	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FILE)
+	cat node_modules/todomvc-common/base.css node_modules/todomvc-app-css/index.css > $(PUBLIC_FOLDER)/app.css
+
+prod:
 	node_modules/typescript/bin/tsc -p $(SOURCE_DIR)
 	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FOLDER)/$(TARGET_FILE)
 
