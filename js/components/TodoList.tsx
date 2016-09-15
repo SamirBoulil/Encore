@@ -210,7 +210,7 @@ class TodoList extends React.Component<IAppProps, IAppState> {
     }
 
     return (
-      <div>
+      <div className="row">
         <header className="header">
           <h1>encore</h1>
           <input

@@ -51,11 +51,9 @@ class Login extends React.Component<{}, {}> {
   public render() {
     var errors = this.state.error ? <p> {this.state.error} </p> : '';
     return (
-      <div className="col-sm-6 col-sm-offset-3">
-      <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit} className="actions">
         <button type="submit" className="btn btn-primary">Login</button>
       </form>
-      </div>
     );
   }
 }

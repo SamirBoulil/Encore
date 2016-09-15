@@ -18,7 +18,6 @@ class Main extends React.Component<{}, {}> {
 
   static contextTypes: React.ValidationMap<any> = {
     router: React.PropTypes.object.isRequired
-    // history: React.PropTypes.object.isRequired
   };
 
 
@@ -44,12 +43,10 @@ class Main extends React.Component<{}, {}> {
   public render() {
     return (
       <div className="container">
-        <div className="row">
           {this.props.children}
-        </div>
       </div>
       );
   }
 }
 
-export {Main};
+export { Main };
