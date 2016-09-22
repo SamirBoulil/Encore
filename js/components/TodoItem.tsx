@@ -79,7 +79,7 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
     var i = 0;
     for (i = 0; i < this.props.todo.retries; i++) {
       retries.push(
-          <span className={(this.props.todo.completed) ? "indicator indicator-completed" : "indicator"}
+          <span className={(this.props.todo.completed) ? "indicator" : "indicator indicator-retry"}
           />
       );
     }
