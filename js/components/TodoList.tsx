@@ -135,25 +135,39 @@ class TodoList extends React.Component<IAppProps, IAppState> {
       }
     });
 
-    shownTodos = shownTodos.sort((todo1, todo2) => {
-        if (TodoModel.isInProgress(todo1) === TodoModel.isInProgress(todo2)) {
-          if (todo1.retries > todo2.retries) {
-            return -1;
-          } else if (todo1.retries === todo2.retries){
-            return 0;
-          } else {
-            return 1;
-          }
+    // Sorting the todos by state
+    var todoIndexes = [];
+    var completedTodos = shownTodos.filter(function (todo, index) {
+        if (todo.completed === true) {
+          todoIndexes.push(index);
+
+          return true;
         }
 
-        if (TodoModel.isInProgress(todo1) && !TodoModel.isInProgress(todo2)) {
-          return -1;
-        }
-
-        return 1;
+        return false;
     });
 
-    var todoItems = shownTodos.map((todo) => {
+    var inProgressTodos = shownTodos.filter(function(todo, index) {
+        if (TodoModel.isInProgress(todo)) {
+          todoIndexes.push(index);
+
+          return true;
+        }
+
+        return false;
+    });
+
+    var noStateTodos = shownTodos.filter(function(todo, index) {
+      return todoIndexes.indexOf(index) === -1;
+    });
+
+    // Sorting the todos by retry count
+    completedTodos = TodoModel.sortTodos(completedTodos);
+    inProgressTodos = TodoModel.sortTodos(inProgressTodos);
+    noStateTodos = TodoModel.sortTodos(noStateTodos);
+
+    // Compiling the todos object in TodoItems components
+    var compileTodo = (todo) => {
       return (
         <TodoItem
           key={todo.id}
@@ -168,7 +182,11 @@ class TodoList extends React.Component<IAppProps, IAppState> {
           onToggleInProgress={this.toggleInProgress.bind(this, todo)}
         />
       );
-    });
+    };
+
+    completedTodos = completedTodos.map(compileTodo);
+    inProgressTodos = inProgressTodos.map(compileTodo);
+    noStateTodos = noStateTodos.map(compileTodo);
 
     var activeTodoCount = todos.reduce(function (accum, todo) {
       return todo.completed ? accum : accum + 1;
@@ -176,7 +194,6 @@ class TodoList extends React.Component<IAppProps, IAppState> {
 
     var completedCount = todos.length - activeTodoCount;
 
-    var that = this;
     var inProgressTodoCount = todos.reduce(function (accum, todo) {
       return TodoModel.isInProgress(todo) ? accum : accum + 1;
     }, 0);
@@ -203,7 +220,9 @@ class TodoList extends React.Component<IAppProps, IAppState> {
             checked={activeTodoCount === 0}
           />
           <ul className="todo-list">
-            {todoItems}
+            {inProgressTodos}
+            {noStateTodos}
+            {completedTodos}
           </ul>
         </section>
       );

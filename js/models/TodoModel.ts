@@ -73,7 +73,9 @@ class TodoModel {
   }
 
   public static isInProgress(todo : ITodo) : boolean{
-    if (todo.inProgressDate === null || typeof(todo.inProgressDate) === 'undefined') {
+    if (todo.inProgressDate === null
+      || typeof(todo.inProgressDate) === 'undefined'
+      || todo.completed === true) {
       return false;
     }
     var timeDiff = Math.abs(new Date().getTime() - new Date(todo.inProgressDate.toString()).getTime());
@@ -96,6 +98,18 @@ class TodoModel {
     });
 
     return todos;
+  }
+
+  public static sortTodos(todos: Array<ITodo>) : Array<ITodo> {
+    return todos.sort((todo1, todo2) => {
+      if (todo1.retries > todo2.retries) {
+        return -1;
+      } else if (todo1.retries === todo2.retries){
+        return 0;
+      } else {
+        return 1;
+      }
+    });
   }
 }
 

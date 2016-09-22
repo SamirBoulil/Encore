@@ -8,6 +8,10 @@ all:
 	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FILE)
 	cat node_modules/todomvc-common/base.css node_modules/todomvc-app-css/index.css > $(PUBLIC_FOLDER)/app.css
 
+install:
+	npm install
+	typings install
+
 prod:
 	mkdir -p dist/node_modules
 	mkdir -p dist/public
@@ -19,10 +23,6 @@ prod:
 	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FOLDER)/$(TARGET_FILE)
 	cat node_modules/todomvc-common/base.css node_modules/todomvc-app-css/index.css > $(TARGET_FOLDER)/$(PUBLIC_FOLDER)/app.css
 	cp index.html dist/index.html
-
-install:
-	npm install
-	typings install
 
 run-server:
 	python -m SimpleHTTPServer 9001
