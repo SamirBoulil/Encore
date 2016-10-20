@@ -13,16 +13,20 @@ install:
 	typings install
 
 prod:
+	# Init dist directories
 	mkdir -p dist/node_modules
 	mkdir -p dist/public
 	mkdir -p dist/js
+	# Copy assets
 	cp -rf node_modules/todomvc-common dist/node_modules/.
 	cp -rf node_modules/react dist/node_modules/.
 	cp -rf node_modules/classnames dist/node_modules/.
+	cp -rf public dist/.
+	cp index.html dist/index.html
+	# Compile and pack JS & css
 	node_modules/typescript/bin/tsc -p $(SOURCE_DIR)
 	browserify $(SOURCE_DIR)/app.js -o $(TARGET_FOLDER)/$(TARGET_FILE)
 	cat node_modules/todomvc-common/base.css node_modules/todomvc-app-css/index.css > $(TARGET_FOLDER)/$(PUBLIC_FOLDER)/app.css
-	cp index.html dist/index.html
 
 run-server:
 	python -m SimpleHTTPServer 9001
@@ -32,3 +36,6 @@ run-server-prod:
 	cd dist && python -m SimpleHTTPServer 9002 dist
 	open http://localhost:9002/
 	cd ..
+
+deploy:
+	firebase deploy
